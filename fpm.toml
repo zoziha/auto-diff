@@ -1,0 +1,7 @@
+name = 'Auto-Diff'
+version = '0.0.1'
+license = 'MIT'
+maintainer = '左志华'
+copyright = 'Copyright 2021 St-Maxwell, 左志华'
+description = 'Auto-Diff'
+categories = ['Auto-Diff', 'Backward Mode']
