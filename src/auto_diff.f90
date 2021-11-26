@@ -9,6 +9,7 @@ module auto_diff
     public :: node_t, dp
     public :: operator(+), operator(-), operator(*), operator(/), operator(**)
     public :: abs, exp, sqrt
+    public :: sigmoid
 
     type node_t
 
@@ -259,7 +260,6 @@ contains
         real(dp), intent(in) :: out
 
         !! locals
-        real(dp) :: local_grad
         integer :: i
 
         self%grad = self%grad + out
@@ -267,14 +267,11 @@ contains
         select case (size(self%parents))
         case (0)
         case (1)
-            local_grad = out*self%parents(1)%local_grad
-            call self%parents(1)%node%backward(local_grad)
+            call self%parents(1)%node%backward(out*self%parents(1)%local_grad)
         case (2)
 
-            do i = 1, 2
-                local_grad = out*self%parents(i)%local_grad
-                call self%parents(i)%node%backward(local_grad)
-            end do
+            call self%parents(1)%node%backward(out*self%parents(1)%local_grad)
+            call self%parents(2)%node%backward(out*self%parents(2)%local_grad)
 
         end select
 
@@ -487,5 +484,19 @@ contains
         new_node%parents(1)%local_grad = merge(0.5_dp/new_node%value, ieee_value(1.0_dp, NAN), node1%value >= 0.0_dp) !TODO: NAN
         
     end function sqrt_n
+    
+    function sigmoid(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+        
+        allocate (new_node)
+        
+        new_node%value = 1.0_dp/(1.0_dp + exp(-node1%value))
+        allocate (new_node%parents(1))
+        
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = new_node%value*(1.0_dp - new_node%value)
+        
+    end function sigmoid
 
 end module auto_diff
