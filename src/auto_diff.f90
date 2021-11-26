@@ -6,7 +6,9 @@ module auto_diff
     implicit none
     private
 
-    public :: node_t, operator(*), operator(+), exp, dp
+    public :: node_t, dp
+    public :: operator(+), operator(-), operator(*), operator(/), operator(**)
+    public :: abs, exp, sqrt
 
     type node_t
 
@@ -37,19 +39,65 @@ module auto_diff
     end type pair_t
 
     interface operator(+)
+        module procedure :: add_nn
         module procedure :: add_nr
         module procedure :: add_rn
-        module procedure :: add_nn
+    end interface
+
+    interface operator(-)
+        module procedure :: sub_nn
+        module procedure :: sub_nr
+        module procedure :: sub_rn
     end interface
 
     interface operator(*)
-        module procedure :: mult_rn
-        module procedure :: mult_nr
         module procedure :: mult_nn
+        module procedure :: mult_nr
+        module procedure :: mult_rn
+    end interface
+
+    interface operator(/)
+        module procedure :: div_nn
+        module procedure :: div_nr
+        module procedure :: div_rn
+    end interface
+
+    interface operator(**)
+        module procedure :: pow_nn
+        module procedure :: pow_nr
+        module procedure :: pow_rn
+    end interface
+
+    interface abs
+        module procedure :: abs_n
     end interface
 
     interface exp
         module procedure :: exp_n
+    end interface
+
+    interface sin
+        module procedure :: sin_n
+    end interface
+
+    interface cos
+        module procedure :: cos_n
+    end interface
+
+    interface tan
+        module procedure :: tan_n
+    end interface
+
+    interface log
+        module procedure :: log_n
+    end interface
+
+    interface log10
+        module procedure :: log10_n
+    end interface
+
+    interface sqrt
+        module procedure :: sqrt_n
     end interface
 
 contains
@@ -231,5 +279,213 @@ contains
         end select
 
     end subroutine backward_next
+
+    function sub_nn(node1, node2) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), intent(in), target :: node2
+        type(node_t), pointer :: new_node
+
+        new_node => add_nn(node1, mult_rn(-1.0_dp, node2))
+
+    end function sub_nn
+
+    function sub_nr(node1, num) result(new_node)
+        type(node_t), intent(in), target :: node1
+        real(dp), intent(in) :: num
+        type(node_t), pointer :: new_node
+
+        new_node => add_nr(node1, -num)
+
+    end function sub_nr
+
+    function sub_rn(num, node1) result(new_node)
+        real(dp), intent(in) :: num
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        new_node => add_rn(num, mult_rn(-1.0_dp, node1))
+
+    end function sub_rn
+
+    function div_nn(node1, node2) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), intent(in), target :: node2
+        type(node_t), pointer :: new_node
+
+        new_node => mult_nn(node1, div_rn(1.0_dp, node2))
+
+    end function div_nn
+
+    function div_nr(node1, num) result(new_node)
+        type(node_t), intent(in), target :: node1
+        real(dp), intent(in) :: num
+        type(node_t), pointer :: new_node
+
+        new_node => mult_nr(node1, 1.0_dp/num)
+
+    end function div_nr
+
+    function div_rn(num, node1) result(new_node)
+        real(dp), intent(in) :: num
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = num/node1%value
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = -num/node1%value**2
+
+    end function div_rn
+
+    !> TO CHECK:
+    function pow_nn(node1, node2) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), intent(in), target :: node2
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = node1%value**node2%value
+        allocate (new_node%parents(2))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = new_node%value*(log(node1%value) + node2%value/node1%value)
+
+        new_node%parents(2)%node => node2
+        new_node%parents(2)%local_grad = new_node%value*(log(node1%value) + node2%value/node1%value)
+
+    end function pow_nn
+
+    function pow_nr(node1, num) result(new_node)
+        type(node_t), intent(in), target :: node1
+        real(dp), intent(in) :: num
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = node1%value**num
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = num*new_node%value**(num - 1.0_dp)
+
+    end function pow_nr
+
+    function pow_rn(num, node1) result(new_node)
+        real(dp), intent(in) :: num
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = num**node1%value
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = num**node1%value*log(num)
+
+    end function pow_rn
+
+    function abs_n(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = abs(node1%value)
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = merge(-1.0_dp, 1.0_dp, node1%value < 0.0_dp)
+
+    end function abs_n
+    
+    function sin_n(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = sin(node1%value)
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = cos(node1%value)
+
+    end function sin_n
+    
+    function cos_n(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = cos(node1%value)
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = -sin(node1%value)
+
+    end function cos_n
+    
+    function tan_n(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+
+        allocate (new_node)
+
+        new_node%value = tan(node1%value)
+        allocate (new_node%parents(1))
+
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = 1.0_dp/(cos(node1%value)**2)
+
+    end function tan_n
+    
+    function log_n(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+        
+        allocate (new_node)
+        
+        new_node%value = log(node1%value)
+        allocate (new_node%parents(1))
+        
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = 1.0_dp/node1%value
+        
+    end function log_n
+    
+    function log10_n(node1) result(new_node)
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+        
+        allocate (new_node)
+        
+        new_node%value = log10(node1%value)
+        allocate (new_node%parents(1))
+        
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = 1.0_dp/node1%value/log(10.0_dp)
+        
+    end function log10_n
+    
+    function sqrt_n(node1) result(new_node)
+        use, intrinsic :: ieee_arithmetic, only: ieee_value, NAN => ieee_quiet_nan
+        type(node_t), intent(in), target :: node1
+        type(node_t), pointer :: new_node
+        
+        allocate (new_node)
+        
+        new_node%value = sqrt(node1%value)
+        allocate (new_node%parents(1))
+        
+        new_node%parents(1)%node => node1
+        new_node%parents(1)%local_grad = merge(0.5_dp/new_node%value, ieee_value(1.0_dp, NAN), node1%value >= 0.0_dp) !TODO: NAN
+        
+    end function sqrt_n
 
 end module auto_diff
