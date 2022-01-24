@@ -23,11 +23,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        gcc_v: [10] # Version of GFortran we want to use.
+        # gcc 11 in ubuntu-latest is currently unavailable
+        os: [macos-latest]
+        # os: [ubuntu-latest, macos-latest]
+        gcc_v: [11] # Version of GFortran we want to use.
         include:
-        - os: ubuntu-latest
-          os-arch: linux-x86_64
+        # - os: ubuntu-latest
+        #   os-arch: linux-x86_64
 
         - os: macos-latest
           os-arch: macos-x86_64

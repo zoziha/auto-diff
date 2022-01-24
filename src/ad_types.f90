@@ -38,7 +38,7 @@ module ad_types
 
 contains
 
-    pure subroutine tree_t_constructor(self, value)
+    elemental subroutine tree_t_constructor(self, value)
         class(tree_t), intent(inout) :: self
         real(rk), intent(in) :: value
 
@@ -47,7 +47,7 @@ contains
 
     end subroutine tree_t_constructor
 
-    pure subroutine tree_t_backward(self)
+    elemental subroutine tree_t_backward(self)
         class(tree_t), intent(inout) :: self
 
         associate (node => self%node)
@@ -63,7 +63,7 @@ contains
 
     end subroutine tree_t_backward
 
-    pure subroutine node_t_backward(self, out)
+    elemental subroutine node_t_backward(self, out)
         class(node_t), intent(inout) :: self
         real(rk), intent(in) :: out
 
@@ -74,7 +74,7 @@ contains
 
     end subroutine node_t_backward
 
-    pure function tree_t_get_value(self) result(value)
+    elemental function tree_t_get_value(self) result(value)
         class(tree_t), intent(in) :: self
         real(rk) :: value
 
@@ -82,7 +82,7 @@ contains
 
     end function tree_t_get_value
     
-    pure function tree_t_get_grad(self) result(grad)
+    elemental function tree_t_get_grad(self) result(grad)
         class(tree_t), intent(in) :: self
         real(rk) :: grad
 
@@ -90,7 +90,7 @@ contains
 
     end function tree_t_get_grad
 
-    pure subroutine tree_t_destructor(self)
+    elemental subroutine tree_t_destructor(self)
         class(tree_t), intent(inout) :: self
 
         if (associated(self%node)) then
@@ -100,7 +100,10 @@ contains
 
     end subroutine tree_t_destructor
 
-    pure recursive subroutine node_t_destructor(self)
+    ! - GFortran >= 11.0
+    ! - Intel Fortran >= 2019
+    ! or report an error: ELEMENTAL attribute conflicts with RECURSIVE attribute.
+    elemental recursive subroutine node_t_destructor(self)
         class(node_t), intent(inout) :: self
 
         if (associated(self%left)) then
