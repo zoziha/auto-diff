@@ -2,20 +2,20 @@
 program main
 
     use auto_diff, only: sigmoid
-    use auto_diff, only: node_t, dp
+    use auto_diff, only: tree_t, rk
     use auto_diff, only: operator(*), operator(+)
     implicit none
-    type(node_t) :: w0, w1, w2, x0, x1
-    type(node_t), pointer :: y
+    type(tree_t) :: w0, w1, w2, x0, x1
+    type(tree_t) :: y
 
-    call w0%constructor(value=2.0_dp)
-    call w1%constructor(value=-3.0_dp)
-    call w2%constructor(value=-3.0_dp)
-    call x0%constructor(value=-1.0_dp)
-    call x1%constructor(value=-2.0_dp)
+    call w0%constructor(value=2.0_rk)
+    call w1%constructor(value=-3.0_rk)
+    call w2%constructor(value=-3.0_rk)
+    call x0%constructor(value=-1.0_rk)
+    call x1%constructor(value=-2.0_rk)
 
     print *, "sigmoid demo: y = 1/(1 + exp(-z)), z = w0*x0 + w1*x1 + w2"
-    y => sigmoid(w0*x0 + w1*x1 + w2)
+    y = sigmoid(w0*x0 + w1*x1 + w2)
 
     print *, "y      = ", y%get_value() ! should be  0.73
     call y%backward()
