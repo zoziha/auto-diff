@@ -12,7 +12,7 @@ program main
     x2 = -4.0_rk
 
     print *, "staged demo: y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)"
-    y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2.0_rk)
+    y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)
 
     print *, "y      = ", y%get_value()
     call y%backward()

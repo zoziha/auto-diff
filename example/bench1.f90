@@ -19,13 +19,13 @@ program main
 
     print *, "Forward"
     call cpu_time(t1)
-    y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2.0_rk)
+    y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)
     call cpu_time(t2)
     print *, "Elapsed time (seconds):", t2 - t1
 
     print *, "Ordinary arithmetic"
     call cpu_time(t1)
-    z = (r1 + sigmoid_local(r2))/(sigmoid_local(r1) + (r1 + r2)**2.0_rk)
+    z = (r1 + sigmoid_local(r2))/(sigmoid_local(r1) + (r1 + r2)**2)
     call cpu_time(t2)
     print *, "Elapsed time (seconds):", t2 - t1
 

@@ -35,6 +35,7 @@ module ad_operator
         module procedure :: pow_tt
         module procedure :: pow_tr
         module procedure :: pow_rt
+        module procedure :: pow_ti
     end interface operator(**)
 
 contains
@@ -179,26 +180,38 @@ contains
         t%node%right_grad = t%node%value*(log(t1%node%value) + t2%node%value/t1%node%value)
 
     end function pow_tt
-    
+
     impure elemental function pow_tr(t1, r) result(t)
         type(tree_t), intent(in) :: t1
         real(rk), intent(in) :: r
         type(tree_t) :: t
 
         t = t1%node%value**r
-        
+
         t%node%left => t1%node
-        t%node%left_grad = r*t%node%value**(r-1.0_rk)
+        t%node%left_grad = r*t%node%value**(r - 1.0_rk)
 
     end function pow_tr
-    
+
+    impure elemental function pow_ti(t1, i) result(t)
+        type(tree_t), intent(in) :: t1
+        integer, intent(in) :: i
+        type(tree_t) :: t
+
+        t = t1%node%value**i
+
+        t%node%left => t1%node
+        t%node%left_grad = i*t%node%value**(i - 1)
+
+    end function pow_ti
+
     impure elemental function pow_rt(r, t1) result(t)
         real(rk), intent(in) :: r
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
         t = r**t1%node%value
-        
+
         t%node%left => t1%node
         t%node%left_grad = r**t1%node%value*log(r)
 

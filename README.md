@@ -47,7 +47,7 @@ program main
     x2 = -4.0_rk
 
     print *, "staged demo: y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)"
-    y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2.0_rk)
+    y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)
 
     print *, "y      = ", y%get_value()
     call y%backward()
@@ -68,19 +68,19 @@ end program main
 ```sh
 $ fpm run --example bench1 --profile debug
  Forward
- Elapsed time (seconds):   1.9218750000000000
+ Elapsed time (seconds):   1.7968750000000000     
  Ordinary arithmetic
- Elapsed time (seconds):  0.15625000000000000
+ Elapsed time (seconds):  0.14062500000000000     
  Backward
  Elapsed time (seconds):  0.29687500000000000
- 
+
 $ fpm run --example bench1 --profile release
  Forward
- Elapsed time (seconds):   1.6093750000000000 
+ Elapsed time (seconds):   1.6718750000000000     
  Ordinary arithmetic
  Elapsed time (seconds):   0.0000000000000000
  Backward
- Elapsed time (seconds):  0.21875000000000000  
+ Elapsed time (seconds):  0.20312500000000000
 ```
 
 The `Bench1` code for arrays (1000*1000) is [here](./example/bench1.f90).
@@ -90,6 +90,7 @@ The `Bench1` code for arrays (1000*1000) is [here](./example/bench1.f90).
 - [St-Maxwell/backward(F90)](https://gist.github.com/St-Maxwell/0a936b03ecf99e284a05d10dd994516e)
 - [KT19/automatic_differentiation](https://github.com/KT19/automatic_differentiation)
 - [李理的博客/自动微分](http://fancyerii.github.io/books/autodiff/)
+- [Fortran-lang Discourse: Backward Mode Auto-Diff in Modern Fortran](https://fortran-lang.discourse.group/t/backward-mode-auto-diff-in-modern-fortran/2334)
 - [joddlehod/DNAD](https://github.com/joddlehod/dnad)
 - [SCM-NV/ftl](https://github.com/SCM-NV/ftl/blob/master/src/ftlList.F90_template)
 - [reverse-mode-automatic-differentiation](https://rufflewind.com/2016-12-30/reverse-mode-automatic-differentiation)
