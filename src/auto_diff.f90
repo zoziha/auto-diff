@@ -1,7 +1,7 @@
 module auto_diff
 
     use ad_kinds, only: rk
-    use ad_types, only: tree_t
+    use ad_types, only: tree_t, assignment(=)
     use ad_operator, only: operator(+), operator(-), operator(*), operator(/), &
                            operator(**)
     use ad_intrinsic, only: abs, max, min, &

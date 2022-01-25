@@ -4,7 +4,7 @@ module ad_types
     implicit none
     private
 
-    public :: tree_t
+    public :: tree_t, assignment(=)
 
     !> Linked list node
     type node_t
@@ -13,7 +13,7 @@ module ad_types
         real(rk) :: grad = 0.0_rk   !! gradient of this node
 
         type(node_t), pointer :: left => null()
-        real(rk) :: left_grad  !! gradient of the left node
+        real(rk), allocatable :: left_grad  !! gradient of the left node
 
         type(node_t), pointer :: right => null()
         real(rk), allocatable :: right_grad  !! gradient of the right node
@@ -29,30 +29,53 @@ module ad_types
     type tree_t
         type(node_t), pointer :: node => null()
     contains
-        procedure :: constructor => tree_t_constructor
         procedure :: backward => tree_t_backward
         procedure :: get_value => tree_t_get_value
         procedure :: get_grad => tree_t_get_grad
         procedure :: destructor => tree_t_destructor
+        final :: final_destructor
     end type tree_t
+    
+    interface assignment(=)
+        module procedure :: tree_t_assignment
+    end interface assignment(=)
+    
+    interface tree_t
+        module procedure :: tree_t_constructor
+    end interface tree_t
 
 contains
 
-    elemental subroutine tree_t_constructor(self, value)
-        class(tree_t), intent(inout) :: self
+    elemental function node_t_constructor(value) result(out)
+        real(rk), intent(in) :: value
+        type(node_t) :: out
+
+        out%value = value
+
+    end function node_t_constructor
+
+    elemental subroutine tree_t_assignment(self, value)
+        type(tree_t), intent(inout) :: self
         real(rk), intent(in) :: value
 
-        allocate (self%node)
-        self%node%value = value
+        allocate (self%node, source=node_t_constructor(value))
 
-    end subroutine tree_t_constructor
+    end subroutine tree_t_assignment
+    
+    elemental function tree_t_constructor(value) result(out)
+        real(rk), intent(in) :: value
+        type(tree_t) :: out
+        
+        call tree_t_assignment(out, value)
+        
+    end function tree_t_constructor
 
     elemental subroutine tree_t_backward(self)
         class(tree_t), intent(inout) :: self
 
         associate (node => self%node)
 
-            self%node%grad = 1.0_rk
+            node%grad = 1.0_rk
 
             if (associated(node%left)) &
                 call node%left%backward(node%left_grad)
@@ -81,7 +104,7 @@ contains
         value = self%node%value
 
     end function tree_t_get_value
-    
+
     elemental function tree_t_get_grad(self) result(grad)
         class(tree_t), intent(in) :: self
         real(rk) :: grad
@@ -95,7 +118,7 @@ contains
 
         if (associated(self%node)) then
             call self%node%destructor()
-            deallocate (self%node)
+            nullify (self%node)  ! @note: Not sure if this will ocurr memory leak
         end if
 
     end subroutine tree_t_destructor
@@ -108,14 +131,21 @@ contains
 
         if (associated(self%left)) then
             call self%left%destructor()
-            deallocate (self%left)
+            nullify (self%left)  ! @note: Not sure if this will ocurr memory leak
         end if
 
         if (associated(self%right)) then
             call self%right%destructor()
-            deallocate (self%right)
+            nullify (self%right) ! @note: Not sure if this will ocurr memory leak
         end if
 
     end subroutine node_t_destructor
+
+    elemental subroutine final_destructor(self)
+        type(tree_t), intent(inout) :: self
+
+        call self%destructor()
+
+    end subroutine final_destructor
 
 end module ad_types

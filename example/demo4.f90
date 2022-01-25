@@ -6,8 +6,8 @@ program main
     type(tree_t) :: a(2, 2), b(2, 2)
     type(tree_t) :: y(2, 2)
 
-    call a%constructor(value=1.0_rk)
-    call b%constructor(value=2.0_rk)
+    a = 1.0_rk
+    b = 2.0_rk
 
     print *, "demo4: y = a + a * b"
 
@@ -20,3 +20,8 @@ program main
     print *, "dy/db = ", b%get_grad()
 
 end program main
+
+! demo4: y = a + a * b
+! y     =    3.0000000000000000        3.0000000000000000        3.0000000000000000        3.0000000000000000     
+! dy/da =    3.0000000000000000        3.0000000000000000        3.0000000000000000        3.0000000000000000
+! dy/db =    1.0000000000000000        1.0000000000000000        1.0000000000000000        1.0000000000000000

@@ -1,7 +1,7 @@
 module ad_intrinsic
 
     use ad_kinds, only: rk
-    use ad_types, only: tree_t
+    use ad_types, only: tree_t, assignment(=)
     implicit none
     private
 
@@ -10,7 +10,7 @@ module ad_intrinsic
     public :: exp, sqrt, log, log10
 
     interface abs
-        module procedure abs_t
+        module procedure :: abs_t
     end interface abs
 
     interface max
@@ -60,8 +60,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = abs(t1%node%value)
+        t = abs(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = merge(-1.0_rk, 1.0_rk, t1%node%value < 0.0_rk)
@@ -72,8 +71,7 @@ contains
         type(tree_t), intent(in) :: t1, t2
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = max(t1%node%value, t2%node%value)
+        t = max(t1%node%value, t2%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk
@@ -98,8 +96,7 @@ contains
         real(rk), intent(in) :: r
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = max(t1%node%value, r)
+        t = max(t1%node%value, r)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk
@@ -110,8 +107,7 @@ contains
         type(tree_t), intent(in) :: t1, t2
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = min(t1%node%value, t2%node%value)
+        t = min(t1%node%value, t2%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk
@@ -136,8 +132,7 @@ contains
         real(rk), intent(in) :: r
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = min(t1%node%value, r)
+        t = min(t1%node%value, r)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk
@@ -148,8 +143,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = sin(t1%node%value)
+        t = sin(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = cos(t1%node%value)
@@ -160,8 +154,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = cos(t1%node%value)
+        t = cos(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = -sin(t1%node%value)
@@ -172,8 +165,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = tan(t1%node%value)
+        t = tan(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk/(cos(t1%node%value)*cos(t1%node%value))
@@ -184,8 +176,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = exp(t1%node%value)
+        t = exp(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = t%node%value
@@ -197,8 +188,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = sqrt(t1%node%value)
+        t = sqrt(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = merge(0.5_rk/t%node%value, ieee_value(1.0_rk, NAN), t1%node%value >= 0.0_rk) !TODO: NAN
@@ -209,8 +199,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = log(t1%node%value)
+        t = log(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk/t1%node%value
@@ -221,8 +210,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = log10(t1%node%value)
+        t = log10(t1%node%value)
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk/t1%node%value/log(10.0_rk)

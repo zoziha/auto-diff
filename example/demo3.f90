@@ -2,14 +2,14 @@
 program main
 
     use auto_diff, only: sigmoid
-    use auto_diff, only: tree_t, rk
+    use auto_diff, only: tree_t, rk, assignment(=)
     use auto_diff, only: operator(*), operator(+), operator(/), operator(**)
     implicit none
     type(tree_t) :: x1, x2
     type(tree_t) :: y
-
-    call x1%constructor(value=3.0_rk)
-    call x2%constructor(value=-4.0_rk)
+    
+    x1 = 3.0_rk
+    x2 = -4.0_rk
 
     print *, "staged demo: y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)"
     y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2.0_rk)

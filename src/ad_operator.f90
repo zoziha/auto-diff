@@ -1,7 +1,7 @@
 module ad_operator
 
     use ad_kinds, only: rk
-    use ad_types, only: tree_t
+    use ad_types, only: tree_t, assignment(=)
     implicit none
     private
 
@@ -43,8 +43,7 @@ contains
         type(tree_t), intent(in) :: t1, t2
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = t1%node%value + t2%node%value
+        t = t1%node%value + t2%node%value
 
         t%node%left => t1%node
         t%node%right => t2%node
@@ -68,8 +67,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = t1%node%value + r
+        t = t1%node%value + r
 
         t%node%left => t1%node
         t%node%left_grad = 1.0_rk
@@ -106,8 +104,7 @@ contains
         type(tree_t), intent(in) :: t1, t2
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = t1%node%value*t2%node%value
+        t = t1%node%value*t2%node%value
 
         t%node%left => t1%node
         t%node%right => t2%node
@@ -131,8 +128,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = t1%node%value*r
+        t = t1%node%value*r
 
         t%node%left => t1%node
         t%node%left_grad = r
@@ -161,9 +157,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate (t%node)
-
-        t%node%value = r/t1%node%value
+        t = r/t1%node%value
 
         t%node%left => t1%node
         t%node%left_grad = -r/t1%node%value**2
@@ -174,8 +168,7 @@ contains
         type(tree_t), intent(in) :: t1, t2
         type(tree_t) :: t
 
-        allocate (t%node)
-        t%node%value = t1%node%value**t2%node%value
+        t = t1%node%value**t2%node%value
 
         t%node%left => t1%node
         t%node%right => t2%node
@@ -192,8 +185,7 @@ contains
         real(rk), intent(in) :: r
         type(tree_t) :: t
 
-        allocate(t%node)
-        t%node%value = t1%node%value**r
+        t = t1%node%value**r
         
         t%node%left => t1%node
         t%node%left_grad = r*t%node%value**(r-1.0_rk)
@@ -205,8 +197,7 @@ contains
         type(tree_t), intent(in) :: t1
         type(tree_t) :: t
 
-        allocate(t%node)
-        t%node%value = r**t1%node%value
+        t = r**t1%node%value
         
         t%node%left => t1%node
         t%node%left_grad = r**t1%node%value*log(r)

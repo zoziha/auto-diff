@@ -6,7 +6,7 @@
 
 [![MIT](https://img.shields.io/github/license/zoziha/Auto-Diff?color=pink)](LICENSE)
 
-## Get Started
+## Getting Started
 
 ### Get the Code
 
@@ -38,15 +38,13 @@ Auto-Diff = { git="https://github.com/zoziha/Auto-Diff" }
 !> Staged solution, run this code: fpm run --example demo3
 program main
 
-    use auto_diff, only: sigmoid
-    use auto_diff, only: tree_t, rk
-    use auto_diff, only: operator(*), operator(+), operator(/), operator(**)
+    use auto_diff
     implicit none
     type(tree_t) :: x1, x2
     type(tree_t) :: y
 
-    call x1%constructor(value=3.0_rk)
-    call x2%constructor(value=-4.0_rk)
+    x1 = 3.0_rk
+    x2 = -4.0_rk
 
     print *, "staged demo: y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2)"
     y = (x1 + sigmoid(x2))/(sigmoid(x1) + (x1 + x2)**2.0_rk)
@@ -65,6 +63,28 @@ end program main
 !> dy/dx2 =   -1.5741410376065648
 ```
 
+### Bench1
+
+```sh
+$ fpm run --example bench1 --profile debug
+ Forward
+ Elapsed time (seconds):   1.9218750000000000
+ Ordinary arithmetic
+ Elapsed time (seconds):  0.15625000000000000
+ Backward
+ Elapsed time (seconds):  0.29687500000000000
+ 
+$ fpm run --example bench1 --profile release
+ Forward
+ Elapsed time (seconds):   1.6093750000000000 
+ Ordinary arithmetic
+ Elapsed time (seconds):   0.0000000000000000
+ Backward
+ Elapsed time (seconds):  0.21875000000000000  
+```
+
+The `Bench1` code for arrays (1000*1000) is [here](./example/bench1.f90).
+
 ## Links
 
 - [St-Maxwell/backward(F90)](https://gist.github.com/St-Maxwell/0a936b03ecf99e284a05d10dd994516e)
@@ -72,3 +92,4 @@ end program main
 - [李理的博客/自动微分](http://fancyerii.github.io/books/autodiff/)
 - [joddlehod/DNAD](https://github.com/joddlehod/dnad)
 - [SCM-NV/ftl](https://github.com/SCM-NV/ftl/blob/master/src/ftlList.F90_template)
+- [reverse-mode-automatic-differentiation](https://rufflewind.com/2016-12-30/reverse-mode-automatic-differentiation)

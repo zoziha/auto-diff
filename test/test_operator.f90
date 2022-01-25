@@ -1,7 +1,7 @@
 module test_operator
     use testdrive, only: new_unittest, unittest_type, error_type, check
     use auto_diff, only: operator(+), operator(-), operator(*), operator(/), operator(**)
-    use auto_diff, only: rk, tree_t
+    use auto_diff, only: rk, tree_t, assignment(=)
     implicit none
     private
 
@@ -30,8 +30,8 @@ contains
         type(tree_t) :: a, b
         type(tree_t) :: c
         
-        call a%constructor(value=1.0_rk)
-        call b%constructor(value=2.0_rk)
+        a = 1.0_rk
+        b = 2.0_rk
         
         c = a + b
         call c%backward()
@@ -39,17 +39,15 @@ contains
         call check(error, c%get_value(), 3.0_rk); if (allocated(error)) return
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
         call check(error, b%get_grad(), 1.0_rk); if (allocated(error)) return
-        call c%destructor()
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = a + 1.0_rk
         call c%backward()
         
         call check(error, c%get_value(), 2.0_rk); if (allocated(error)) return
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
-        call c%destructor()
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = 1.0_rk + a
         call c%backward()
         
@@ -64,8 +62,8 @@ contains
         type(tree_t) :: a, b
         type(tree_t) :: c
         
-        call a%constructor(value=1.0_rk)
-        call b%constructor(value=2.0_rk)
+        a = 1.0_rk
+        b = 2.0_rk
         
         c = a - b
         call c%backward()
@@ -74,14 +72,14 @@ contains
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
         call check(error, b%get_grad(), -1.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = a - 1.0_rk
         call c%backward()
         
         call check(error, c%get_value(), 0.0_rk); if (allocated(error)) return
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = 1.0_rk - a
         call c%backward()
         
@@ -96,8 +94,8 @@ contains
         type(tree_t) :: a, b
         type(tree_t) :: c
         
-        call a%constructor(value=1.0_rk)
-        call b%constructor(value=2.0_rk)
+        a = 1.0_rk
+        b = 2.0_rk
         
         c = a * b
         call c%backward()
@@ -106,14 +104,14 @@ contains
         call check(error, a%get_grad(), 2.0_rk); if (allocated(error)) return
         call check(error, b%get_grad(), 1.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = a * 1.0_rk
         call c%backward()
         
         call check(error, c%get_value(), 1.0_rk); if (allocated(error)) return
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = 1.0_rk * a
         call c%backward()
         
@@ -128,8 +126,8 @@ contains
         type(tree_t) :: a, b
         type(tree_t) :: c
         
-        call a%constructor(value=1.0_rk)
-        call b%constructor(value=2.0_rk)
+        a = 1.0_rk
+        b = 2.0_rk
         
         c = a / b
         call c%backward()
@@ -138,14 +136,14 @@ contains
         call check(error, a%get_grad(), 0.5_rk); if (allocated(error)) return
         call check(error, b%get_grad(), -0.25_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = a / 1.0_rk
         call c%backward()
         
         call check(error, c%get_value(), 1.0_rk); if (allocated(error)) return
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = 1.0_rk / a
         call c%backward()
         
@@ -160,8 +158,8 @@ contains
         type(tree_t) :: a, b
         type(tree_t) :: c
         
-        call a%constructor(value=1.0_rk)
-        call b%constructor(value=2.0_rk)
+        a = 1.0_rk
+        b = 2.0_rk
         
         c = a ** b
         call c%backward()
@@ -170,14 +168,14 @@ contains
         call check(error, a%get_grad(), 2.0_rk); if (allocated(error)) return
         call check(error, b%get_grad(), 2.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = a ** 1.0_rk
         call c%backward()
         
         call check(error, c%get_value(), 1.0_rk); if (allocated(error)) return
         call check(error, a%get_grad(), 1.0_rk); if (allocated(error)) return
         
-        call a%constructor(value=1.0_rk)
+        a = 1.0_rk
         c = 1.0_rk ** a
         call c%backward()
         
