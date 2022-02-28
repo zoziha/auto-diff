@@ -46,11 +46,11 @@ module ad_types
 
 contains
 
-    elemental function node_t_constructor(value) result(out)
+    elemental function node_t_constructor(value) result(return_node)
         real(rk), intent(in) :: value
-        type(node_t) :: out
+        type(node_t) :: return_node
 
-        out%value = value
+        return_node%value = value
 
     end function node_t_constructor
 
@@ -62,11 +62,11 @@ contains
 
     end subroutine tree_t_assignment
     
-    elemental function tree_t_constructor(value) result(out)
+    elemental function tree_t_constructor(value) result(return_tree)
         real(rk), intent(in) :: value
-        type(tree_t) :: out
+        type(tree_t) :: return_tree
         
-        call tree_t_assignment(out, value)
+        call tree_t_assignment(return_tree, value)
         
     end function tree_t_constructor
 

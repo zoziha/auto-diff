@@ -4,6 +4,8 @@
 
 *This project is still in the experimental stage, feedback is welcome!*
 
+*This library is only available in the `gfortran` compiler, and there is a risk of memory leakage, which is still a toy project. And I can't think of a more appropriate way to further improve them. For a more reasonable inverse differential library, see [fazang](https://github.com/yizhang-yiz/fazang).*
+
 [![MIT](https://img.shields.io/github/license/zoziha/Auto-Diff?color=pink)](LICENSE)
 
 ## Getting Started
@@ -17,7 +19,7 @@ cd Auto-Diff
 
 ### Build with [Fortran-lang/fpm](https://github.com/fortran-lang/fpm)
 
-Fortran Package Manager (fpm) is a package manager and build system for Fortran. <br>
+Fortran Package Manager (fpm) is a package manager and build system for Fortran.
 You can build `Auto-Diff` using the provided `fpm.toml`:
 
 ```sh
@@ -94,3 +96,4 @@ The `Bench1` code for arrays (1000*1000) is [here](./example/bench1.f90).
 - [joddlehod/DNAD](https://github.com/joddlehod/dnad)
 - [SCM-NV/ftl](https://github.com/SCM-NV/ftl/blob/master/src/ftlList.F90_template)
 - [reverse-mode-automatic-differentiation](https://rufflewind.com/2016-12-30/reverse-mode-automatic-differentiation)
+- [fazang](https://github.com/yizhang-yiz/fazang)
